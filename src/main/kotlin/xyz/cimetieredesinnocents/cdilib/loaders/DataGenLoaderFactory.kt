@@ -18,6 +18,11 @@ open class DataGenLoaderFactory {
         val efh: EFH
     )
 
+    enum class Side {
+        SERVER,
+        CLIENT
+    }
+
     private val serverRegistry = mutableListOf<(Context) -> DataProvider>()
     private val clientRegistry = mutableListOf<(Context) -> DataProvider>()
 
@@ -27,6 +32,13 @@ open class DataGenLoaderFactory {
 
     fun client(factory: (Context) -> DataProvider) {
         clientRegistry.add(factory)
+    }
+
+    fun register(side: Side, factory: (Context) -> DataProvider) {
+        when (side) {
+            Side.SERVER -> serverRegistry.add(factory)
+            Side.CLIENT -> clientRegistry.add(factory)
+        }
     }
 
     fun bootstrap(bus: IEventBus) {

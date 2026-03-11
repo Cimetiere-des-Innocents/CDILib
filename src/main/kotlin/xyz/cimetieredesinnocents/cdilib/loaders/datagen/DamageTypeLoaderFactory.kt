@@ -1,6 +1,7 @@
 package xyz.cimetieredesinnocents.cdilib.loaders.datagen
 
 import net.minecraft.core.Holder
+import net.minecraft.core.RegistrySetBuilder
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
@@ -9,6 +10,8 @@ import net.minecraft.world.damagesource.DamageScaling
 import net.minecraft.world.damagesource.DamageType
 import net.minecraft.world.damagesource.DeathMessageType
 import net.minecraft.world.level.Level
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider
+import xyz.cimetieredesinnocents.cdilib.loaders.DataGenLoaderFactory
 import kotlin.reflect.KProperty
 
 open class DamageTypeLoaderFactory(private val modid: String) {
@@ -38,5 +41,26 @@ open class DamageTypeLoaderFactory(private val modid: String) {
         val value = RawDamageType(modid, name, scaling, exhaustion, effects, deathMessageType)
         registry.add(value)
         return value
+    }
+
+    fun bootstrap(dataGen: DataGenLoaderFactory) {
+        dataGen.register(DataGenLoaderFactory.Side.SERVER) {
+            DatapackBuiltinEntriesProvider(
+                it.output,
+                it.lp,
+                RegistrySetBuilder().add(Registries.DAMAGE_TYPE) { context ->
+                    for (rawValue in registry) {
+                        context.register(rawValue.resourceKey, DamageType(
+                            "${modid}.${rawValue.name}",
+                            rawValue.scaling,
+                            rawValue.exhaustion,
+                            rawValue.effects,
+                            rawValue.deathMessageType
+                        ))
+                    }
+                },
+                setOf(modid)
+            )
+        }
     }
 }
