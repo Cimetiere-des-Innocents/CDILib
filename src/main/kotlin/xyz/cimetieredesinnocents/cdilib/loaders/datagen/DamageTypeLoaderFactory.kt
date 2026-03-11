@@ -1,4 +1,4 @@
-package xyz.cimetieredesinnocents.cdilib.loaders
+package xyz.cimetieredesinnocents.cdilib.loaders.datagen
 
 import net.minecraft.core.Holder
 import net.minecraft.core.registries.Registries
