@@ -53,6 +53,7 @@ open class PlayerCapabilityProvider<I : PlayerCapabilityBase, T : I>(
                 clearMaps()
             }
             cap.player = player
+            cap.afterRespawn()
         }
 
         bus.addListener(PlayerEvent.PlayerLoggedInEvent::class.java) {

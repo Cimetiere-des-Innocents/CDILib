@@ -4,4 +4,5 @@ import net.minecraft.world.entity.player.Player
 
 interface PlayerCapabilityBase {
     var player: Player
+    fun afterRespawn() {}
 }
