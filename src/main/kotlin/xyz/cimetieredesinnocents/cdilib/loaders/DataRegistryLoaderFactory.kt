@@ -10,17 +10,17 @@ import net.neoforged.neoforge.registries.DataPackRegistryEvent
 open class DataRegistryLoaderFactory(private val modid: String) {
     private class RegistryItem<T>(
         val key: ResourceKey<Registry<T>>,
-        val codec: Codec<T>,
-        val netCodec: Codec<T>
+        val codec: () -> Codec<T>,
+        val netCodec: () -> Codec<T>
     ) {
         fun register(event: DataPackRegistryEvent.NewRegistry) {
-            event.dataPackRegistry(key, codec, netCodec)
+            event.dataPackRegistry(key, codec(), netCodec())
         }
     }
 
     private val registry = mutableListOf<RegistryItem<*>>()
 
-    fun <T> register(name: String, codec: Codec<T>, netCodec: Codec<T>): ResourceKey<Registry<T>> {
+    fun <T> register(name: String, codec: () -> Codec<T>, netCodec: () -> Codec<T>): ResourceKey<Registry<T>> {
         val key = ResourceKey.createRegistryKey<T>(
             ResourceLocation.fromNamespaceAndPath(modid, name)
         )
@@ -28,7 +28,7 @@ open class DataRegistryLoaderFactory(private val modid: String) {
         return key
     }
 
-    fun <T> register(name: String, codec: Codec<T>): ResourceKey<Registry<T>> {
+    fun <T> register(name: String, codec: () -> Codec<T>): ResourceKey<Registry<T>> {
         return register(name, codec, codec)
     }
 
